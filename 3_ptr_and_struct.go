@@ -23,6 +23,7 @@ func main() {
 }
 
 func strucLiteral(){
+	fmt.Println("Struct Literal with Defined Type")
 	a := Vertex{1, 2} // implicit X = 1, Y =2
 	b := Vertex{Y: 1} // implicit X = 0
 	c := Vertex{} // implicit X = 0 , Y = 0
@@ -32,6 +33,17 @@ func strucLiteral(){
 	fmt.Println(b)
 	fmt.Println(c)
 	fmt.Println(ptr)
+
+	fmt.Println("Struct Literal with OnDemand Type")
+	testOnDemandStruct := struct {
+		someField string
+		someOtherField string
+	}{
+		"test1",
+		"test2",
+	}
+
+	fmt.Printf("On demand struct declaration: %#v\n", testOnDemandStruct)
 }
 
 func basicStruct(){
