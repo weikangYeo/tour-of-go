@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 func main() {
 	arrayDemo()
@@ -8,9 +11,62 @@ func main() {
 	sliceLiteral()
 	sliceLenthAndCapacity()
 	makeSlice()
+	sliceOfSlice()
+	growSlice()
+	rangeDemo()
 }
 
-func makeSlice(){
+func rangeDemo() {
+	fmt.Println("==============================================")
+	fmt.Println("Range()")
+	fmt.Println("==============================================")
+	var pow = []int{1, 2, 4, 8, 16, 32, 64, 128}
+	for i, v := range pow {
+		fmt.Printf("2**%d = %d\n", i, v)
+	}
+
+	// if want index only
+	for i := range pow {
+		fmt.Printf("i = %d\n", i)
+	}
+
+	// if want value only
+	for _ , v := range pow {
+		fmt.Printf("v = %d\n", v)
+	}
+}
+
+func growSlice() {
+	fmt.Println("==============================================")
+	fmt.Println("Grow Slice")
+	fmt.Println("==============================================")
+	var s []int
+	printSliceLenCap(s)
+
+	s = append(s, 1)
+	printSliceLenCap(s)
+
+}
+
+func sliceOfSlice() {
+	fmt.Println("==============================================")
+	fmt.Println("Slice of Slice")
+	fmt.Println("==============================================")
+	twoDimSlice := [][]string{
+		[]string{"_", "_", "_"},
+		[]string{"_", "_", "_"},
+		[]string{"_", "_", "_"},
+	}
+
+	twoDimSlice[0][0] = "X"
+	twoDimSlice[1][1] = "O"
+
+	for i := 0; i < len(twoDimSlice); i++ {
+		fmt.Printf("%s\n", strings.Join(twoDimSlice[i], " "))
+	}
+}
+
+func makeSlice() {
 	fmt.Println("==============================================")
 	fmt.Println("make() slice")
 	fmt.Println("==============================================")
@@ -29,22 +85,22 @@ func makeSlice(){
 
 	// Note on what just happened:
 	/*
-		1. `b := make([]int, 0, 5)`
-	       * This command does two things:
-	           1. It allocates a new, hidden array in memory with a size of 5. Because it's an int array, Go initializes all 5 elements to their zero value, which is 0. So, in
-	              memory, you have [0, 0, 0, 0, 0].
-	           2. It creates a slice b that points to this underlying array.
-	       * However, you specified a length of 0. This means the slice b is a "view" of the array that currently shows none of its elements.
-	       * At this point: len=0, cap=5, b=[]
+			1. `b := make([]int, 0, 5)`
+		       * This command does two things:
+		           1. It allocates a new, hidden array in memory with a size of 5. Because it's an int array, Go initializes all 5 elements to their zero value, which is 0. So, in
+		              memory, you have [0, 0, 0, 0, 0].
+		           2. It creates a slice b that points to this underlying array.
+		       * However, you specified a length of 0. This means the slice b is a "view" of the array that currently shows none of its elements.
+		       * At this point: len=0, cap=5, b=[]
 
-	   2. `b = b[:cap(b)]`
-	       * This is the crucial step. This operation creates a new slice that shares the same underlying array.
-	       * You are saying, "create a new view of the original array that starts at the beginning (:), and extends to the full capacity (cap(b), which is 5)."
-	       * This new slice now has a length of 5. Since it's viewing the underlying array that was already initialized to [0, 0, 0, 0, 0], that's the content you see.
-	       * At this point: len=5, cap=5, b=[0 0 0 0 0]
+		   2. `b = b[:cap(b)]`
+		       * This is the crucial step. This operation creates a new slice that shares the same underlying array.
+		       * You are saying, "create a new view of the original array that starts at the beginning (:), and extends to the full capacity (cap(b), which is 5)."
+		       * This new slice now has a length of 5. Since it's viewing the underlying array that was already initialized to [0, 0, 0, 0, 0], that's the content you see.
+		       * At this point: len=5, cap=5, b=[0 0 0 0 0]
 
-	   So, the underlying array was never empty; it was just that your initial slice b had a length of 0, preventing you from seeing the zeroed values that make had already allocated.
-	   The second operation simply expanded the slice's "view" to include the entire capacity of that array.
+		   So, the underlying array was never empty; it was just that your initial slice b had a length of 0, preventing you from seeing the zeroed values that make had already allocated.
+		   The second operation simply expanded the slice's "view" to include the entire capacity of that array.
 	*/
 }
 
@@ -71,11 +127,10 @@ func sliceLiteral() {
 
 func sliceLenthAndCapacity() {
 	/*
-		* `cap` (Capacity): This determines the size of the memory allocation for the underlying array. It's the maximum number of elements the slice can hold before Go needs to
-	     allocate a new, larger array and copy the old data over.
-		* `len` (Length): This determines how many of those allocated elements are initially accessible through the slice. It's the initial "view" into the array.
+			* `cap` (Capacity): This determines the size of the memory allocation for the underlying array. It's the maximum number of elements the slice can hold before Go needs to
+		     allocate a new, larger array and copy the old data over.
+			* `len` (Length): This determines how many of those allocated elements are initially accessible through the slice. It's the initial "view" into the array.
 	*/
-
 
 	fmt.Println("==============================================")
 	fmt.Println("Slice Len & Cap")
@@ -84,7 +139,7 @@ func sliceLenthAndCapacity() {
 	// slice literal, create an array & slice point to it
 	// NOTE: Go is like C and any other language, array is sit side by side in memory
 	// and when I point to an array, I am pointing to the FIRST element of array.
-	s := []int{1,2,3,4,5,6}
+	s := []int{1, 2, 3, 4, 5, 6}
 
 	// len is how many element slice VIEW the array
 	// cap is size of array it point to
@@ -121,7 +176,7 @@ func sliceLenthAndCapacity() {
 	printSliceLenCap(s)
 }
 
-func printSliceLenCap( s []int){
+func printSliceLenCap(s []int) {
 	// len is how many element the Slice view it
 	// capacity is how many element of the original array that Slice point to
 	fmt.Printf("len=%d cap=%d %v\n", len(s), cap(s), s)
@@ -172,4 +227,13 @@ func arrayDemo() {
 	fmt.Printf("Array literal declararion : %#v\n", arr2)
 	fmt.Println("Print the other arr")
 	fmt.Println(arr2)
+
+	// Go Array is VALUE instead of pointer like C
+	fmt.Println("copy value of arr and change to another value")
+	cpyArr := arr
+	cpyArr[0] = 10000
+	cpyArr[1] = 20000
+	fmt.Printf("arr: %#v\n", arr)
+	fmt.Printf("cpyArr: %#v\n", cpyArr)
+
 }
