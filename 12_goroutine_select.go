@@ -63,6 +63,7 @@ func defaultSelectDemo() {
 			fmt.Printf("[%6s] BOOM!\n", elapsed())
 			return
 		default:
+			// default case, run when non of case valid
 			fmt.Printf("[%6s]     .\n", elapsed())
 			time.Sleep(50 * time.Millisecond)
 		}
