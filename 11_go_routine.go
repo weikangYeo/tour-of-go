@@ -12,6 +12,8 @@ func main() {
 	channelDemo()
 
 	bufferedChannelDemo()
+
+	rangeAndCloseDemo()
 }
 
 func goRoutineSample() {
@@ -78,4 +80,65 @@ func bufferedChannelDemo() {
 	// ch <- 3
 	fmt.Println(<-ch)
 	fmt.Println(<-ch)
+}
+
+func rangeAndCloseDemo() {
+	fmt.Println("-------------")
+	fmt.Println("Range and Close Channel DEMO")
+	fmt.Println("-------------")
+
+	// ch can return a flag indicate whether there is next val to get or not
+	// we can use `range` to iterate available value
+	// v, ok := <-ch
+	c := make(chan int, 10)
+	go fibonacci(cap(c), c)
+	for i := range c {
+		fmt.Println(i)
+	}
+
+	c2 := make(chan int, 10)
+	c2 <- 1
+	c2 <- 2
+	// if a channel without close, range reqad will cause error
+	//fatal error: all goroutines are asleep - deadlock!
+	//goroutine 1 [chan receive]
+	close(c2)
+
+	fmt.Println("try to range read from channel")
+	for i := range c2 {
+		fmt.Println(i)
+	}
+	fmt.Println("Range read ended")
+
+	c3 := make(chan int, 10)
+	c3 <- 1
+	c3 <- 2
+
+	<-c3
+	//<-c3
+
+	// if channel is already empty, the following code fails
+	nextVal, haveValue := <-c3
+	if haveValue {
+		fmt.Println("hasValue")
+		fmt.Println(nextVal)
+	} else {
+		fmt.Println("c3 channel is empty")
+	}
+
+	// the following would not work, as value from channel c2 already read from range previously
+	//fmt.Println("try to read directly from channel")
+	//fmt.Println(<-c2)
+	//fmt.Println(<-c2)
+
+}
+
+func fibonacci(n int, c chan int) {
+	x, y := 0, 1
+	for i := 0; i < n; i++ {
+		c <- x
+		x, y = y, x+y
+	}
+	// read is suppose to be closed by sender, not reader
+	close(c)
 }
